@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
@@ -33,10 +34,13 @@ public class Main extends ApplicationAdapter {
     Image pozadi;
     Texture text;
     Image postavicka;
+    Image healthBar;
+    Image healthBarBackground;
     int hpHrace = 100;
     int damageHrace = 50;
     Rectangle hitboxHrace;
     ArrayList<Prekazka> prekazky = new ArrayList<Prekazka>();
+    String vybranyCustomSkin;
 
     Table uiTable;
 
@@ -66,6 +70,12 @@ public class Main extends ApplicationAdapter {
         strely = new ArrayList<>();
         postavicka = new Image(text);
         postavicka.setSize(200, 200);
+
+        healthBar = new Image(new Texture("bullet.jpg"));
+        healthBarBackground = new Image(new Texture("brick.jpg"));
+
+        healthBar.setSize(100,20);
+        healthBarBackground.setSize(100,20);
        /* prekazky.add(new Prekazka(1000, 200, 50,50));
         prekazky.add(new Prekazka(500, 600, 50,50));
         prekazky.add(new Prekazka(500, 200, 50,50));*/
@@ -126,9 +136,10 @@ public class Main extends ApplicationAdapter {
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
                 fileChooser.showOpenDialog(null);
+                vybranyCustomSkin = fileChooser.getSelectedFile().getAbsolutePath();
+                postavicka.setDrawable(new TextureRegionDrawable(new Texture(Gdx.files.absolute(vybranyCustomSkin))));
             }
         });
-
 
         startTlacitko.addListener(new ClickListener(){
             @Override
@@ -163,6 +174,9 @@ public class Main extends ApplicationAdapter {
 
         menuStage.addActor(pozadi);
         menuStage.addActor(uiTable);
+
+        menuStage.addActor(healthBar);
+        menuStage.addActor(healthBarBackground);
 
         endStage = new Stage();
         loseScreen = new Image(new Texture("losescreen.png"));
@@ -241,6 +255,9 @@ public class Main extends ApplicationAdapter {
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
                 spawniStrelu(true, postavicka.getX(), postavicka.getY(),otoceniHrace);
             }
+
+            healthBar.setPosition(postavicka.getX()+100, postavicka.getY()+250);
+            healthBarBackground.setPosition(postavicka.getX()+100, postavicka.getY()+250);
 
             otocHraceZaMysi();
             zkontrolujKolize();
